@@ -13,6 +13,13 @@ import {
 } from 'react-native';
 import {styles, Router, User, lib, Activity, Competence, Course, Loader, SelectList} from 'Lernreflex/imports';
 
+/**
+ * Represents the view for an admin. This is a fallback view to create competences
+ * and to link moodle activities and questions to them.
+ * Please use moodle to create and link competences and activities.
+ * @extends React.Component
+ * @constructor
+ */
 
 class Admin extends Component{
 
@@ -22,7 +29,7 @@ class Admin extends Component{
       loading:false,
       printableName:'',
       competences:'',
-      competenceForQuestion:'',
+      competenceForQuestions:'',
       competenceForActivity: '',
       activityId: '',
       activityName: '',
@@ -101,7 +108,7 @@ class Admin extends Component{
         for(var i in questions){
           let q = {
             question: questions[i].text,
-            competenceId: this.state.competenceForQuestion
+            competenceId: this.state.competenceForQuestions
           };
           u.post('competences/questions', q).then((d) => {
             console.log(d);
@@ -168,7 +175,7 @@ class Admin extends Component{
             })
           });
         } else
-        if(name == 'competenceForActivity'){
+        if(name == 'competenceForActivity' || name == 'competenceForQuestions'){
           let competence = new Competence(false);
           user.isLoggedIn().then((u) => {
             competence.getOverview().then((competences) => {
@@ -241,7 +248,7 @@ class Admin extends Component{
             placeholder="Kompetenzen (Mit ; getrennt eintragen)">
           </TextInput>
           {this._renderSaveCourseButton()}
-          <TextInput
+          {/*<TextInput
             ref="competenceForQuestion"
             onChangeText={(competenceForQuestion) => this.setState({competenceForQuestion})}
             value={this.state.competenceForQuestion}
@@ -251,7 +258,19 @@ class Admin extends Component{
             returnKeyType="next"
             blurOnSubmit={false}
             placeholder="Kompetenz für Fragen">
-          </TextInput>
+          </TextInput>*/}
+          <View style={styles._.row}>
+            <TouchableHighlight
+              underlayColor={styles._.secondary}
+              style={[styles._.col, {flex:0.8, marginRight:10}]}
+              onPress={() => this.selectPressed('competenceForQuestions')}>
+              <View style={{borderBottomWidth:1, padding:5, borderColor:'#000', flex:0}}>
+                <Text style={{fontSize:18}}>
+                  {this.state.loadingSelect ? 'Lädt...' : (this.state.competenceForQuestions ? this.state.competenceForQuestions : 'Kompetenz auswählen >')}
+                </Text>
+              </View>
+            </TouchableHighlight>
+          </View>
           {this._renderSaveQuestionButton()}
           <View style={styles._.row}>
             <TouchableHighlight
